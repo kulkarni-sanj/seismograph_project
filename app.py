@@ -87,8 +87,8 @@ df_cdi, df_key = load_data()
 
 if df_cdi is not None:
     # --- HEADER ---
-    st.markdown("<h1>Hello, Sanjana 👋</h1>", unsafe_allow_html=True)
-    st.markdown("<p style='color:#64748B; font-size:1.1rem; margin-top:-15px;'>Here is the latest seismic activity in AI discourse.</p>", unsafe_allow_html=True)
+    st.markdown("<h1>Hello👋</h1>", unsafe_allow_html=True)
+    st.markdown("<p style='color:#64748B; font-size:1.1rem; margin-top:-15px;'>Here is the latest seismic activity in AI discourse.(2021-2023)</p>", unsafe_allow_html=True)
     
     # --- TOP KPI ROW ---
     c1, c2, c3, c4 = st.columns(4)
