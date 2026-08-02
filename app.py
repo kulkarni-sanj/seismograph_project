@@ -75,7 +75,7 @@ if df_cdi is not None:
         st.info("💡 **Viva Tip:** Increase 'Meaning' weight to show how language shifted, or 'Topic' weight to show the emergence of new AI tech.")
 
     # --- HEADER ---
-    st.markdown("<h1>Hello <span class='gradient-text'>Sanjana</span> 👋</h1>", unsafe_allow_html=True)
+    st.markdown("<h1>Hello <span class='gradient-text'></span> 👋</h1>", unsafe_allow_html=True)
     st.markdown("<p style='font-size:1.2rem; color:#64748B; margin-top:-15px;'>Cultural Seismograph: AI Discourse Shift (2021-2023)</p>", unsafe_allow_html=True)
     
     # Recalculate CDI live based on slider
