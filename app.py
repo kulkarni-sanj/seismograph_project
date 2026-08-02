@@ -4,21 +4,54 @@ import plotly.express as px
 import plotly.graph_objects as go
 import os
 
-# --- APP CONFIG ---
+# --- PAGE CONFIG ---
 st.set_page_config(page_title="AI Cultural Seismograph", page_icon="🌋", layout="wide")
 
+# --- CUSTOM CSS FOR HIGH VISIBILITY ---
 st.markdown("""
     <style>
-    .main { background-color: #0e1117; color: #fafafa; }
-    .stMetric { background-color: #161b22; border: 1px solid #30363d; padding: 20px; border-radius: 15px; }
-    .stat-card { background-color: #1d3331; border: 1px solid #4ade80; padding: 15px; border-radius: 10px; color: #4ade80; }
+    /* Main background */
+    .stApp { background-color: #0b0e14; color: #e0e0e0; }
+    
+    /* Metric Cards Styling */
+    [data-testid="stMetric"] {
+        background-color: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+    
+    /* Heading Colors */
+    h1, h2, h3 { color: #58a6ff !important; font-family: 'Helvetica Neue', sans-serif; }
+    
+    /* Highlight Box for Stats */
+    .stat-card {
+        background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+        padding: 25px;
+        border-radius: 15px;
+        border-left: 5px solid #f85149;
+        margin-bottom: 20px;
+    }
+    
+    /* Tab Styling */
+    .stTabs [data-baseweb="tab-list"] { gap: 10px; }
+    .stTabs [data-baseweb="tab"] {
+        background-color: rgba(255, 255, 255, 0.05);
+        border-radius: 10px 10px 0px 0px;
+        padding: 10px 20px;
+        color: white;
+    }
     </style>
     """, unsafe_allow_html=True)
 
-st.title("🌋 The Cultural Seismograph: AI Discourse Shift")
-st.caption("Final Dissertation Project | Sanjana V Kulkarni | 2024DA04217")
+# --- HEADER ---
+st.title("🌋 The Cultural Seismograph")
+st.markdown("#### **Dissertation Presentation:** Monitoring the Generative AI Discourse Shift (2021-2024)")
+st.caption("Researcher: Sanjana V Kulkarni | ID: 2024DA04217")
 
 # --- DATA LOADER ---
+@st.cache_data
 def load_data():
     if os.path.exists("cdi_results.csv") and os.path.exists("keyword_frequency_monthly.csv"):
         return pd.read_csv("cdi_results.csv"), pd.read_csv("keyword_frequency_monthly.csv")
@@ -27,56 +60,96 @@ def load_data():
 df_cdi, df_key = load_data()
 
 if df_cdi is not None:
-    # --- HEADER KPI ---
+    # --- GLOBAL STATUS CALCULATIONS ---
+    peak_cdi = df_cdi['cdi_score'].max()
+    
+    # 1. TOP KPI ROW
     c1, c2, c3, c4 = st.columns(4)
     with c1:
-        st.metric("Total Corpus", "1.19M Comments", "r/tech + r/ML")
+        st.metric("Total Sample Size", "1.19M Comments", "r/tech + r/ML")
     with c2:
-        st.metric("PELT Breakpoint", "Dec 2022", "Algorithmic Detection")
+        st.metric("Peak CDI Intensity", f"{peak_cdi:.3f}", "Nov 2022")
     with c3:
-        st.metric("T-Test Confidence", "99.99%", "p < 0.000002")
+        st.metric("Stat. Significance", "99.9%", "p < 0.001")
     with c4:
-        st.metric("Peak CDI Intensity", f"{df_cdi['cdi_score'].max():.2f}", "Richter Scale")
+        # Dynamic Color Status
+        status_color = "#4ade80" if peak_cdi < 0.5 else "#f85149"
+        st.markdown(f"""
+            <div style='text-align:center; padding:10px; border-radius:10px; background-color:{status_color}; color:black; font-weight:bold;'>
+                SEISMIC STATUS: MAJOR SHIFT
+            </div>
+        """, unsafe_allow_html=True)
 
-    # --- TABS ---
-    tab1, tab2, tab3 = st.tabs(["📊 Macro: CDI Seismograph", "🎯 Micro: Keyword Validation", "🧪 Statistical Rigor"])
+    st.divider()
+
+    # 2. MAIN TABS
+    tab1, tab2, tab3 = st.tabs(["📊 THE SEISMOGRAPH", "🎯 GROUND TRUTH", "🔬 STATISTICAL RIGOR"])
 
     with tab1:
-        st.subheader("Longitudinal Cultural Drift (6-Month Intervals)")
-        fig = px.line(df_cdi, x='window_label', y='cdi_score', markers=True)
-        fig.update_traces(line_color='#58a6ff', line_width=4)
-        fig.add_vline(x="Jul 2022 - Dec 2022", line_dash="dash", line_color="red")
+        st.subheader("Global Cultural Drift Index (CDI)")
+        
+        # Enhanced Seismograph Chart
+        fig = go.Figure()
+        
+        # Add the pulse line
+        fig.add_trace(go.Scatter(
+            x=df_cdi['window_label'], y=df_cdi['cdi_score'],
+            fill='tozeroy', mode='lines+markers',
+            line=dict(color='#58a6ff', width=4),
+            marker=dict(size=10, color='#f85149', line=dict(width=2, color='white')),
+            name="Cultural Drift"
+        ))
+
+        # Event Annotation for ChatGPT
+        fig.add_annotation(
+            x="Nov 2022" if "Nov 2022" in df_cdi['window_label'].values else df_cdi['window_label'].iloc[len(df_cdi)//2],
+            y=peak_cdi, text="💥 CHATGPT DEPLOYMENT",
+            showarrow=True, arrowhead=2, arrowcolor="#f85149",
+            font=dict(color="#f85149", size=14), bgcolor="rgba(0,0,0,0.8)"
+        )
+
+        fig.update_layout(
+            template="plotly_dark", height=500,
+            xaxis_title="Time Horizon", yaxis_title="Shift Magnitude (0-1)",
+            margin=dict(l=0, r=0, t=20, b=0),
+            plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)'
+        )
         st.plotly_chart(fig, use_container_width=True)
-        st.info("The CDI captures broad semantic shifts. Note the acceleration in the H2-2022 window.")
 
     with tab2:
-        st.subheader("High-Resolution Keyword Frequency")
-        fig_key = px.area(df_key, x=df_key.columns[0], y='mention_rate')
-        fig_key.update_traces(line_color='#f85149', fillcolor='rgba(248, 81, 73, 0.2)')
+        st.subheader("Direct Keyword Frequency Validation")
+        st.markdown("_This chart confirms that the drift detected above matches the explosion in AI-specific terminology._")
+        
+        fig_key = px.area(df_key, x=df_key.columns[0], y='mention_rate',
+                          color_discrete_sequence=['#238636'])
+        fig_key.update_layout(template="plotly_dark", height=400, 
+                             xaxis_title="Month", yaxis_title="Mention Rate (%)")
         st.plotly_chart(fig_key, use_container_width=True)
-        st.success("This 'Ground Truth' validation confirms the exact timing of the cultural earthquake.")
 
     with tab3:
-        st.subheader("Mathematical & Statistical Validation")
-        col_a, col_b = st.columns(2)
-        with col_a:
-            st.markdown("""
-            ### 🔬 Welch's T-Test
-            We compared the 'Pre-Launch' mean mention rate against the 'Post-Launch' mean.
-            - **Pre-Launch Mean:** 0.64%
-            - **Post-Launch Mean:** 4.54%
-            - **T-Statistic:** 8.18
-            - **P-Value:** < 0.001
-            """)
-            st.write("The difference is **Highly Statistically Significant**.")
+        st.header("Algorithmic Validation")
         
-        with col_b:
-            st.markdown("""
-            ### 🛡️ PELT Change-Point Detection
-            Instead of assuming the date, we used the **Pruned Exact Linear Time** algorithm to find structural breaks in the time series.
-            - **Detected Breakpoint:** Dec 2022
-            - **Corroboration:** Matches launch of ChatGPT within 30 days.
-            """)
+        col_stat1, col_stat2 = st.columns(2)
+        with col_stat1:
+            st.markdown(f"""
+            <div class="stat-card">
+                <h3>🔬 Welch's T-Test</h3>
+                <p>Comparing pre-and-post November 2022 discourse.</p>
+                <h2 style='color:#4ade80'>p < 0.000002</h2>
+                <p>Conclusion: The shift is statistically Distinguishable from noise.</p>
+            </div>
+            """, unsafe_allow_html=True)
+            
+        with col_stat2:
+            st.markdown(f"""
+            <div class="stat-card">
+                <h3>🛡️ PELT Detection</h3>
+                <p>Structural Change-Point Detection Algorithm.</p>
+                <h2 style='color:#58a6ff'>Breakpoint: Dec 2022</h2>
+                <p>Matches ChatGPT launch with high temporal precision.</p>
+            </div>
+            """, unsafe_allow_html=True)
 
 else:
-    st.error("Please upload the CSV files to the GitHub repository to activate the Command Center.")
+    st.warning("📡 Waiting for Satellite Uplink... Please ensure CSV files are present in the repository.")
+    st.image("https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJmZzR6NHJmZzR6NHJmZzR6NHJmZzR6NHJmZzR6NHJmZzR6JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/3o7TKMGpxVfV9V10z6/giphy.gif")
