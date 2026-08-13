@@ -84,7 +84,7 @@ if df_cdi is not None:
 
     # --- TOP KPI ROW ---
     c1, c2, c3, c4 = st.columns(4)
-    with c1: st.metric("Analysis Volume", "1.19M", "Comments")
+    with c1: st.metric("Analysis Volume", "119.9K", "Comments")
     with c2: st.metric("Seismic Peak", f"{df_cdi['live_cdi'].max():.2f}", peak_row['window_label'])
     with c3: st.metric("Statistical Power", "p < 0.001", "Welch's T-Test")
     with c4: st.metric("Shift Status", "Significant", "PELT Verified")
